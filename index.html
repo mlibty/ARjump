@@ -29,10 +29,36 @@
       height: 100% !important;
       display: block;
     }
+    #explore-btn {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255,255,255,0.92);
+  color: #111;
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  cursor: pointer;
+  z-index: 9999;
+
+  display: none;
+
+  transition: opacity .35s ease, transform .35s ease;
+}
+
+#explore-btn:hover {
+  transform: translateX(-50%) scale(1.05);
+}
   </style>
 </head>
 
 <body>
+  <button id="explore-btn">
+    Explore →
+</button>
   <a-scene
     mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; filterMinCF: 0.001; filterBeta: 50; warmupTolerance: 5; missTolerance: 8;"
     embedded
@@ -53,7 +79,9 @@
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <a-entity mindar-image-target="targetIndex: 0">
+    <a-entity
+    id="target"
+    mindar-image-target="targetIndex: 0">
       <a-video
         src="#video"
         position="0 0 -0.01"
@@ -66,58 +94,43 @@
 
   <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const video = document.getElementById("video");
-  const target = document.querySelector("[mindar-image-target]");
 
-  // Create one-time start overlay
-  const overlay = document.createElement("div");
-  overlay.style.cssText = `
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.5);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:white;
-    font:24px sans-serif;
-    z-index:9999;
-    cursor:pointer;
-  `;
-  overlay.innerHTML = "Tap to enable audio";
-  document.body.appendChild(overlay);
+    const scene = document.querySelector("a-scene");
+    const video = document.querySelector("#video");
+    const target = document.querySelector("#target");
+    const button = document.querySelector("#explore-btn");
 
-  let audioEnabled = false;
+    scene.addEventListener("arReady", async () => {
 
-  overlay.addEventListener("click", async () => {
-    try {
-      video.muted = false;
+        try {
+            await video.play();
+        } catch(e) {
+            console.log(e);
+        }
 
-      // Unlock media playback
-      await video.play();
-      video.pause();
-      video.currentTime = 0;
+    });
 
-      audioEnabled = true;
-      overlay.remove();
-    } catch (err) {
-      console.error(err);
-    }
-  }, { once: true });
+    target.addEventListener("targetFound", () => {
 
-  target.addEventListener("targetFound", async () => {
-    if (!audioEnabled) return;
+        button.style.display = "block";
 
-    try {
-      video.currentTime = 0;
-      await video.play();
-    } catch (err) {
-      console.error(err);
-    }
-  });
+    });
 
-  target.addEventListener("targetLost", () => {
-    video.pause();
-  });
+    target.addEventListener("targetLost", () => {
+
+        button.style.display = "none";
+
+    });
+
+    button.addEventListener("click", () => {
+
+        window.open(
+            "https://www.markozubak.com/",
+            "_blank"
+        );
+
+    });
+
 });
 </script>
 </body>
