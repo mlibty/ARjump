@@ -110,15 +110,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-    target.addEventListener("targetFound", () => {
+    scene.addEventListener("arReady", async () => {
 
-        button.style.display = "block";
+    try {
+        await video.play();
 
-    });
+        // Show after 5 seconds
+        setTimeout(() => {
+            button.style.display = "block";
+        }, 5000);
 
-    target.addEventListener("targetLost", () => {
+    } catch(e) {
+        console.log(e);
+    }
 
-        button.style.display = "none";
+});
 
     });
 
