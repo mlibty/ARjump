@@ -110,9 +110,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     });
 
-    target.addEventListener("targetFound", () => {
+    target.addEventListener("targetFound", async () => {
 
-        button.style.display = "block";
+    button.style.display = "block";
+
+    video.currentTime = 0;
+
+    try {
+        await video.play();
+    } catch(e) {
+        console.log(e);
+    }
+
+});
 
     });
   target.addEventListener("targetLost", () => {
