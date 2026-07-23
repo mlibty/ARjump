@@ -33,6 +33,9 @@
 </head>
 
 <body>
+  <button id="explore-btn">
+    Visit website
+</button>
   <a-scene
     mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; filterMinCF: 0.001; filterBeta: 50; warmupTolerance: 5; missTolerance: 8;"
     embedded
@@ -53,7 +56,9 @@
 
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
-    <a-entity mindar-image-target="targetIndex: 0">
+   <a-entity
+    id="target"
+    mindar-image-target="targetIndex: 0">
       <a-video
         src="#video"
         position="0 0 -0.01"
