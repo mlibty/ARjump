@@ -66,58 +66,26 @@
 
   <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const video = document.getElementById("video");
-  const target = document.querySelector("[mindar-image-target]");
 
-  // Create one-time start overlay
-  const overlay = document.createElement("div");
-  overlay.style.cssText = `
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.5);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:white;
-    font:24px sans-serif;
-    z-index:9999;
-    cursor:pointer;
-  `;
-  overlay.innerHTML = "Tap to enable audio";
-  document.body.appendChild(overlay);
+    const scene = document.querySelector("a-scene");
+    const target = document.querySelector("[mindar-image-target]");
 
-  let audioEnabled = false;
+    scene.addEventListener("loaded", () => {
+        console.log("Scene loaded");
+    });
 
-  overlay.addEventListener("click", async () => {
-    try {
-      video.muted = false;
+    scene.addEventListener("arReady", () => {
+        console.log("AR Ready");
+    });
 
-      // Unlock media playback
-      await video.play();
-      video.pause();
-      video.currentTime = 0;
+    target.addEventListener("targetFound", () => {
+        console.log("FOUND");
+    });
 
-      audioEnabled = true;
-      overlay.remove();
-    } catch (err) {
-      console.error(err);
-    }
-  }, { once: true });
+    target.addEventListener("targetLost", () => {
+        console.log("LOST");
+    });
 
-  target.addEventListener("targetFound", async () => {
-    if (!audioEnabled) return;
-
-    try {
-      video.currentTime = 0;
-      await video.play();
-    } catch (err) {
-      console.error(err);
-    }
-  });
-
-  target.addEventListener("targetLost", () => {
-    video.pause();
-  });
 });
 </script>
 </body>
