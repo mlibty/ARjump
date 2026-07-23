@@ -68,22 +68,39 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     const scene = document.querySelector("a-scene");
-    const target = document.querySelector("[mindar-image-target]");
+    const video = document.querySelector("#video");
+    const target = document.querySelector("#target");
+    const button = document.querySelector("#explore-btn");
 
-    scene.addEventListener("loaded", () => {
-        console.log("Scene loaded");
-    });
+    scene.addEventListener("arReady", async () => {
 
-    scene.addEventListener("arReady", () => {
-        console.log("AR Ready");
+        try {
+            await video.play();
+        } catch(e) {
+            console.log(e);
+        }
+
     });
 
     target.addEventListener("targetFound", () => {
-        console.log("FOUND");
+
+        button.style.display = "block";
+
     });
 
     target.addEventListener("targetLost", () => {
-        console.log("LOST");
+
+        button.style.display = "none";
+
+    });
+
+    button.addEventListener("click", () => {
+
+        window.open(
+            "https://www.markozubak.com/",
+            "_blank"
+        );
+
     });
 
 });
