@@ -98,14 +98,31 @@
       // Start muted so autoplay is never blocked, then unlock real
       // audio the moment the user taps anywhere (required by mobile
       // browsers before they'll allow unmuted playback).
+      // Android Chrome specifically requires play() itself to be
+      // called synchronously inside the gesture handler (not just
+      // toggling .muted), so we "prime" it here and immediately pause.
       video.muted = true;
-      const unlockAudio = () => {
+      let audioUnlocked = false;
+      const unlockAudio = async () => {
+        if (audioUnlocked) return;
+        audioUnlocked = true;
         video.muted = false;
-        document.removeEventListener("touchend", unlockAudio);
-        document.removeEventListener("click", unlockAudio);
+        try {
+          await video.play();
+          video.pause();
+          video.currentTime = 0;
+        } catch (e) {
+          console.log("audio unlock play() failed:", e);
+        }
+        document.removeEventListener("touchstart", unlockAudio, true);
+        document.removeEventListener("pointerdown", unlockAudio, true);
+        document.removeEventListener("click", unlockAudio, true);
       };
-      document.addEventListener("touchend", unlockAudio, { once: true });
-      document.addEventListener("click", unlockAudio, { once: true });
+      // capture: true so this fires even if the AR canvas stops
+      // propagation on the event elsewhere
+      document.addEventListener("touchstart", unlockAudio, true);
+      document.addEventListener("pointerdown", unlockAudio, true);
+      document.addEventListener("click", unlockAudio, true);
 
       target.addEventListener("targetFound", async () => {
         button.classList.add("visible");
