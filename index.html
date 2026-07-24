@@ -70,7 +70,6 @@
         src="./video.mp4"
         preload="auto"
         loop
-        muted
         playsinline
         webkit-playsinline
       ></video>
@@ -96,17 +95,27 @@
       const target = document.querySelector("#target");
       const button = document.querySelector("#explore-btn");
 
+      // Start muted so autoplay is never blocked, then unlock real
+      // audio the moment the user taps anywhere (required by mobile
+      // browsers before they'll allow unmuted playback).
+      video.muted = true;
+      const unlockAudio = () => {
+        video.muted = false;
+        document.removeEventListener("touchend", unlockAudio);
+        document.removeEventListener("click", unlockAudio);
+      };
+      document.addEventListener("touchend", unlockAudio, { once: true });
+      document.addEventListener("click", unlockAudio, { once: true });
+
       target.addEventListener("targetFound", async () => {
-  console.log("targetFound fired");
-  button.classList.add("visible");
-  video.currentTime = 0;
-  try {
-    await video.play();
-    console.log("video playing");
-  } catch (e) {
-    console.log("play() blocked:", e);
-  }
-});
+        button.classList.add("visible");
+        video.currentTime = 0;
+        try {
+          await video.play();
+        } catch (e) {
+          console.log("play() blocked:", e);
+        }
+      });
 
       target.addEventListener("targetLost", () => {
         video.pause();
