@@ -97,14 +97,16 @@
       const button = document.querySelector("#explore-btn");
 
       target.addEventListener("targetFound", async () => {
-        button.classList.add("visible");
-        video.currentTime = 0;
-        try {
-          await video.play();
-        } catch (e) {
-          console.log("play() blocked:", e);
-        }
-      });
+  console.log("targetFound fired");
+  button.classList.add("visible");
+  video.currentTime = 0;
+  try {
+    await video.play();
+    console.log("video playing");
+  } catch (e) {
+    console.log("play() blocked:", e);
+  }
+});
 
       target.addEventListener("targetLost", () => {
         video.pause();
