@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-
   <style>
     html, body {
       margin: 0;
@@ -15,7 +14,6 @@
       height: 100%;
       background: transparent;
     }
-
     a-scene {
       position: absolute;
       width: 100%;
@@ -23,42 +21,42 @@
       top: 0;
       left: 0;
     }
-
     canvas {
       width: 100% !important;
       height: 100% !important;
       display: block;
     }
     #explore-btn {
-  position: fixed;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 12px 22px;
-  border-radius: 999px;
-  border: none;
-  background: rgba(255,255,255,0.92);
-  color: #111;
-  font-family: Arial, sans-serif;
-  font-size: 15px;
-  cursor: pointer;
-  z-index: 9999;
-
-  display: none;
-
-  transition: opacity .35s ease, transform .35s ease;
-}
-
-#explore-btn:hover {
-  transform: translateX(-50%) scale(1.05);
-}
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 22px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(255,255,255,0.92);
+      color: #111;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      cursor: pointer;
+      z-index: 9999;
+      display: none;
+      opacity: 0;
+      transition: opacity .35s ease, transform .35s ease;
+    }
+    #explore-btn.visible {
+      display: block;
+      opacity: 1;
+    }
+    #explore-btn:hover {
+      transform: translateX(-50%) scale(1.05);
+    }
   </style>
 </head>
-
 <body>
   <button id="explore-btn">
     Visit website
-</button>
+  </button>
   <a-scene
     mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; filterMinCF: 0.001; filterBeta: 50; warmupTolerance: 5; missTolerance: 8;"
     embedded
@@ -72,16 +70,15 @@
         src="./video.mp4"
         preload="auto"
         loop
+        muted
         playsinline
         webkit-playsinline
       ></video>
     </a-assets>
-
     <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-
-   <a-entity
-    id="target"
-    mindar-image-target="targetIndex: 0">
+    <a-entity
+      id="target"
+      mindar-image-target="targetIndex: 0">
       <a-video
         src="#video"
         position="0 0 -0.01"
@@ -93,55 +90,31 @@
   </a-scene>
 
   <script>
-document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
+      const scene = document.querySelector("a-scene");
+      const video = document.querySelector("#video");
+      const target = document.querySelector("#target");
+      const button = document.querySelector("#explore-btn");
 
-    const scene = document.querySelector("a-scene");
-    const video = document.querySelector("#video");
-    const target = document.querySelector("#target");
-    const button = document.querySelector("#explore-btn");
-
-    scene.addEventListener("arReady", async () => {
-
+      target.addEventListener("targetFound", async () => {
+        button.classList.add("visible");
+        video.currentTime = 0;
         try {
-            await video.play();
-        } catch(e) {
-            console.log(e);
+          await video.play();
+        } catch (e) {
+          console.log("play() blocked:", e);
         }
+      });
 
+      target.addEventListener("targetLost", () => {
+        video.pause();
+        button.classList.remove("visible");
+      });
+
+      button.addEventListener("click", () => {
+        window.open("https://www.markozubak.com/", "_blank");
+      });
     });
-
-    target.addEventListener("targetFound", async () => {
-
-    button.style.display = "block";
-
-    video.currentTime = 0;
-
-    try {
-        await video.play();
-    } catch(e) {
-        console.log(e);
-    }
-
-});
-
-    });
-  target.addEventListener("targetLost", () => {
-    video.pause();
-
-});
-
-  
-
-    button.addEventListener("click", () => {
-
-        window.open(
-            "https://www.markozubak.com/",
-            "_blank"
-        );
-
-    });
-
-});
-</script>
+  </script>
 </body>
 </html>
